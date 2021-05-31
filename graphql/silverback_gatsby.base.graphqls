@@ -1,0 +1,15 @@
+interface Translatable {
+  id: String!
+  translations: [Translation!]!
+}
+
+interface Translation {
+  langcode: String!
+}
+
+type Feed {
+  typeName: String!
+  singleFieldName: String!
+  listFieldName: String!
+  changes(lastBuild: Int, currentBuild: Int): [String!]!
+}
