@@ -53,7 +53,7 @@ class GatsbyUpdateTrigger implements GatsbyUpdateTriggerInterface {
             'json' => ['buildId' => $id],
           ]);
           if (
-            \Drupal::moduleHandler()->moduleExists('gatsby_build_monitor') &&
+            function_exists('_gatsby_build_monitor_state') &&
             // This detects the "build" webhook.
             strpos($url, '/data_source/publish/') !== FALSE
           ) {
