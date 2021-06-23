@@ -1,0 +1,19 @@
+query MultilingualMenus {
+  loadMainMenu(id: "main:de") {
+    items {
+      id
+      parent
+      label
+      url
+    }
+    translations {
+      langcode
+      items {
+        id
+        parent
+        label
+        url
+      }
+    }
+  }
+}
