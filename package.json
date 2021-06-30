@@ -1,6 +1,6 @@
 {
   "name": "@-amazeelabs/silverback_gatsby",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "main": "index.js",
   "scripts": {
     "test": "./test.sh"
@@ -12,5 +12,5 @@
     "repository": "git@github.com:AmazeeLabs/silverback_gatsby.git",
     "branch": "main"
   },
-  "gitHead": "71101b6a8f38940e95eb9ed899cf9ac9dcf91694"
+  "gitHead": "8a220a0742e1a8145c7f97715ecbe8996b9546d1"
 }
