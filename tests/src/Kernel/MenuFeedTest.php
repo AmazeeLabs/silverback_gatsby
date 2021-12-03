@@ -27,7 +27,8 @@ class MenuFeedTest extends GraphQLTestBase {
           'silverback_gatsby_example' => [
             'extensions' => [
               'silverback_gatsby' => 'silverback_gatsby'
-            ]
+            ],
+            'build_webhook' => 'http://localhost:8888/__refresh'
           ]
         ]
       ]
@@ -254,7 +255,7 @@ class MenuFeedTest extends GraphQLTestBase {
           [
             'langcode' => 'fr',
             'items' => [
-              // French has not translations at all. The menu is empty there.
+              // French was not translations at all. The menu is empty there.
             ],
           ],
           [
