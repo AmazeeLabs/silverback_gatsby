@@ -1,10 +1,10 @@
 {
   "name": "@-amazeelabs/silverback_gatsby",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "main": "index.js",
   "scripts": {
     "version": "sync-composer-version",
-    "test": "./test.sh"
+    "test:unit": "cd ../../../../apps/silverback-drupal && vendor/phpunit/phpunit/phpunit web/modules/contrib/silverback_gatsby"
   },
   "devDependencies": {
     "@amazeelabs/sync-composer-version": "^1.1.2"
@@ -16,5 +16,5 @@
     "repository": "git@github.com:AmazeeLabs/silverback_gatsby.git",
     "branch": "main"
   },
-  "gitHead": "25d92e375240d99e03a2bf1e13dcbdf5bf210644"
+  "gitHead": "95c111274417363a680549a0da473e15ba023086"
 }
