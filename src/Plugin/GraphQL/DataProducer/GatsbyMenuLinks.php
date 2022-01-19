@@ -2,7 +2,6 @@
 
 namespace Drupal\silverback_gatsby\Plugin\GraphQL\DataProducer;
 
-use Drupal\Core\Annotation\ContextDefinition;
 use Drupal\Core\Menu\InaccessibleMenuLink;
 use Drupal\Core\Menu\MenuLinkTreeElement;
 use Drupal\graphql\GraphQL\Execution\FieldContext;
@@ -66,7 +65,10 @@ class GatsbyMenuLinks extends DataProducerPluginBase {
       $menuLink = \Drupal::entityTypeManager()
         ->getStorage('menu_link_content')
         ->load($entity_id);
-      return !$language || $menuLink->hasTranslation($language) || $menuLink->language()->getId() === $language;
+      return !$language ||
+        !$menuLink->isTranslatable() ||
+        $menuLink->hasTranslation($language) ||
+        $menuLink->language()->getId() === $language;
     });
 
     return $items;
