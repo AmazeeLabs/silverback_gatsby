@@ -1,6 +1,6 @@
 {
   "name": "@-amazeelabs/silverback_gatsby",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "main": "index.js",
   "scripts": {
     "version": "sync-composer-version",
@@ -16,5 +16,5 @@
     "repository": "git@github.com:AmazeeLabs/silverback_gatsby.git",
     "branch": "main"
   },
-  "gitHead": "d37f09b7d6e69736f853480e9f42738143a69519"
+  "gitHead": "4f5fc02c2e2cd182a4791981063f5bd52cb608e2"
 }
