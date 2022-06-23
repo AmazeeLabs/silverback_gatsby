@@ -2,6 +2,8 @@
 
 namespace Drupal\silverback_gatsby\Plugin\GraphQL\DataProducer;
 
+use Drupal\Core\Annotation\ContextDefinition;
+use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\RenderContext;
@@ -42,6 +44,10 @@ use Drupal\typed_data\Exception\LogicException;
  *     "ignored" = @ContextDefinition("any",
  *       label = @Translation("Ignored block types"),
  *       required = FALSE
+ *     ),
+ *     "aggregated" = @ContextDefinition("any",
+ *       label = @Translation("Aggregated into core/paragraph"),
+ *       required = FALSE
  *     )
  *   }
  * )
@@ -55,12 +61,13 @@ class EditorBlocks extends DataProducerPluginBase {
     $entity,
     $type,
     $ignored,
+    $aggregated,
     FieldContext $field
   ) {
     if (!$entity instanceof EntityInterface) {
       throw new LogicException('Editor blocks can only be retrieved from Entities');
     }
-    $field->setContextLanguage($entity->language()->getId());
+    $field->setContextValue('document_language', $entity->language()->getId());
     if (!($entity instanceof TypedDataInterface) && !empty($type)) {
       $manager = $this->getTypedDataManager();
       $definition = $manager->createDataDefinition($type);
@@ -106,7 +113,7 @@ class EditorBlocks extends DataProducerPluginBase {
 
     $field->setContextValue('ignored_editor_blocks', $ignored);
 
-    return EditorBlocksProcessor::processsIgnoredBlocks($result, $ignored);
+    return EditorBlocksProcessor::aggregateParagraphs(EditorBlocksProcessor::processsIgnoredBlocks($result, $ignored), $aggregated);
   }
 
 }
