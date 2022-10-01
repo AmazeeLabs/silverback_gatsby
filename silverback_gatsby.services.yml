@@ -8,6 +8,13 @@ services:
       - '\Drupal\silverback_gatsby\Plugin\FeedInterface'
       - '\Drupal\silverback_gatsby\Annotation\GatsbyFeed'
 
+  silverback_gatsby.build_trigger:
+    class: Drupal\silverback_gatsby\GatsbyBuildTrigger
+    arguments:
+      - '@http_client'
+      - '@messenger'
+      - '@entity_type.manager'
+
   silverback_gatsby.update_trigger:
     class: Drupal\silverback_gatsby\GatsbyUpdateTrigger
     arguments:
@@ -17,11 +24,14 @@ services:
 
   silverback_gatsby.update_tracker:
     class: Drupal\silverback_gatsby\GatsbyUpdateTracker
-    arguments: ['@database', '@current_user', '@silverback_gatsby.update_trigger']
+    arguments: ['@database', '@current_user', '@silverback_gatsby.build_trigger']
 
   silverback_gatsby.update_handler:
     class: Drupal\silverback_gatsby\GatsbyUpdateHandler
-    arguments: ['@entity_type.manager', '@silverback_gatsby.update_tracker']
+    arguments:
+    - '@entity_type.manager'
+    - '@silverback_gatsby.update_tracker'
+    - '@silverback_gatsby.update_trigger'
 
   silverback_gatsby.menu_tree_storage:
     class: Drupal\silverback_gatsby\MenuTreeStorageDecorator

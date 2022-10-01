@@ -7,28 +7,13 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 interface GatsbyUpdateTriggerInterface {
 
   /**
-   * Trigger a build for a given server with a build id.
+   * Trigger an update for a given server with a type name and entity id.
    *
    * @param string $server
    *   The server id.
-   * @param int $id
-   *   The build id.
+   * @param \Drupal\silverback_gatsby\GatsbyUpdate $update
    */
-  public function trigger(string $server, int $id) : void;
-
-  /**
-   * Trigger a build for a given server based on latest build id.
-   *
-   * Compares the latest build id with the one on the frontend to not
-   * trigger unnecessary builds.
-   *
-   * @param string $server
-   *   The server id.
-   *
-   * @return TranslatableMarkup
-   *   The resut message.
-   */
-  public function triggerLatestBuild(string $server) : TranslatableMarkup;
+  public function trigger(string $server, GatsbyUpdate $update) : void;
 
   /**
    * Send out notifications about potential updates to all Gatsby servers.
