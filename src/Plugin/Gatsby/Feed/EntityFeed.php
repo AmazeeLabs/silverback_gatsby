@@ -112,10 +112,10 @@ class EntityFeed extends FeedBase implements ContainerFactoryPluginInterface {
       if ($this->isTranslatable() && $context instanceof TranslatableInterface) {
         return array_map(function (LanguageInterface $lang) use ($context) {
           $translation = $context->getTranslation($lang->getId());
-          return GatsbyBuildId::build($translation->id(), $translation->language()->getId());
+          return GatsbyBuildId::build($context->uuid(), $translation->language()->getId());
         }, $context->getTranslationLanguages());
       }
-      return [$context->id()];
+      return [$context->uuid()];
     }
     return [];
   }
@@ -157,7 +157,7 @@ class EntityFeed extends FeedBase implements ContainerFactoryPluginInterface {
    * {@inheritDoc}
    */
   public function resolveId(): ResolverInterface {
-    return $this->builder->produce('entity_id')
+    return $this->builder->produce('entity_uuid')
       ->map('entity', $this->builder->fromParent());
   }
 
@@ -196,7 +196,7 @@ class EntityFeed extends FeedBase implements ContainerFactoryPluginInterface {
 
   public function getExtensionDefinition(DocumentNode $parentAst): string {
     $type = $this->typeName;
-    return "\nextend type Query { load{$type}Revision(id: String!, revision: String!) : $type }";
+    return "\nextend type Query { _load{$type}Revision(id: String!, revision: String!) : $type @deprecated }";
   }
 
   public function addExtensionResolvers(
@@ -218,7 +218,7 @@ class EntityFeed extends FeedBase implements ContainerFactoryPluginInterface {
       ->map('language', $langResolver)
       ->map('revision_id', $builder->fromArgument('revision'))
     ;
-    $registry->addFieldResolver("Query", "load{$type}Revision", $resolver);
+    $registry->addFieldResolver("Query", "_load{$type}Revision", $resolver);
   }
 
 }
