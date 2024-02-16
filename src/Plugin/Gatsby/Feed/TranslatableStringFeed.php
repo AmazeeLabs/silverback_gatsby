@@ -4,28 +4,27 @@ namespace Drupal\silverback_gatsby\Plugin\Gatsby\Feed;
 
 use Drupal\Core\Session\AccountInterface;
 use Drupal\graphql\GraphQL\Resolver\ResolverInterface;
-use Drupal\graphql\GraphQL\ResolverBuilder;
-use Drupal\graphql\GraphQL\ResolverRegistryInterface;
-use Drupal\locale\SourceString;
 use Drupal\locale\StringInterface;
 use Drupal\locale\TranslationString;
 use Drupal\silverback_gatsby\Plugin\FeedBase;
-use GraphQL\Language\AST\DocumentNode;
 
 /**
- * Feed plugin that creates Gatsby feeds based on Drupal string translations.
- *
- * DEPRECATED: Use @translatableString instead, when working with a directive
- * based schema.
+ * Feed plugin that sources string translations into Gatsby.
  *
  * @GatsbyFeed(
- *   id = "stringTranslation"
+ *   id = "translatableString"
  * )
  */
-class StringTranslationFeed extends FeedBase {
+class TranslatableStringFeed extends FeedBase {
 
-  protected $contextPrefix;
+  /**
+   * The context prefix, matching the drupal translation context.
+   */
+  protected string $contextPrefix;
 
+  /**
+   * {@inheritDoc}
+   */
   public function __construct(
     $config,
     $plugin_id,
@@ -35,14 +34,10 @@ class StringTranslationFeed extends FeedBase {
     parent::__construct($config, $plugin_id, $plugin_definition);
   }
 
-  public function getTranslationTypeName() {
-    return $this->getTypeName() . 'Translation';
-  }
-
   /**
    * {@inheritDoc}
    */
-  function getUpdateIds($context, ?AccountInterface $account): array {
+  public function getUpdateIds($context, ?AccountInterface $account): array {
     if (!$context instanceof StringInterface) {
       return [];
     }
@@ -63,7 +58,7 @@ class StringTranslationFeed extends FeedBase {
    * {@inheritDoc}
    */
   public function isTranslatable(): bool {
-    return FALSE;
+    return TRUE;
   }
 
   /**
@@ -79,7 +74,7 @@ class StringTranslationFeed extends FeedBase {
    */
   public function resolveLangcode(): ResolverInterface {
     return $this->builder->callback(
-      fn(StringInterface $value) => $value instanceof TranslationString ? $value->language : ''
+      fn(StringInterface $value) => $value instanceof TranslationString ? $value->language : 'en'
     );
   }
 
@@ -100,6 +95,9 @@ class StringTranslationFeed extends FeedBase {
       ->map('sourceString', $this->builder->fromParent());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function resolveItems(ResolverInterface $limit, ResolverInterface $offset): ResolverInterface {
     return $this->builder->produce('list_strings')
       ->map('offset', $this->builder->defaultValue(
@@ -120,52 +118,11 @@ class StringTranslationFeed extends FeedBase {
   /**
    * {@inheritDoc}
    */
-  public function resolveItem(ResolverInterface $id, ?ResolverInterface $langcode = null): ResolverInterface {
-    $resolver = $this->builder->produce('fetch_string')
-      ->map('id', $id);
+  public function resolveItem(ResolverInterface $id, ?ResolverInterface $langcode = NULL): ResolverInterface {
+    $resolver = $this->builder->produce('fetch_translatable_string')
+      ->map('id', $id)
+      ->map('language', $langcode);
     return $resolver;
   }
 
-  public function getExtensionDefinition(DocumentNode $parentAst): string {
-    $typeName = $this->getTypeName();
-    $translationTypeName = $this->getTranslationTypeName();
-    $def = [];
-    $def[] = "extend type $typeName {";
-    $def[] = "  source: String!";
-    $def[] = "  context: String";
-    $def[] = "  translations: [$translationTypeName]";
-    $def[] = "}";
-    $def[] = "type $translationTypeName {";
-    $def[] = "  id: String!";
-    $def[] = "  source: String!";
-    $def[] = "  langcode: String!";
-    $def[] = "  translation: String!";
-    $def[] = "}";
-    return implode("\n", $def);
-  }
-
-  public function addExtensionResolvers(
-    ResolverRegistryInterface $registry,
-    ResolverBuilder $builder
-  ): void {
-    $registry->addFieldResolver($this->getTypeName(), 'source', $builder->callback(
-      fn (StringInterface $value) => $value->getString()
-    ));
-    $registry->addFieldResolver($this->getTypeName(), 'context', $builder->callback(
-      fn (StringInterface $value) => $value->context
-    ));
-    $registry->addFieldResolver($this->getTypeName(), 'translations', $this->resolveTranslations());
-
-    $translationTypeName = $this->getTranslationTypeName();
-    $registry->addFieldResolver($translationTypeName, 'id', $builder->produce('gatsby_build_id')
-      ->map('id', $this->resolveId())
-      ->map('langcode', $this->resolveLangcode()));
-    $registry->addFieldResolver($translationTypeName, 'source', $builder->callback(
-      fn (StringInterface $value) => $value->source
-    ));
-    $registry->addFieldResolver($translationTypeName, 'langcode', $this->resolveLangcode());
-    $registry->addFieldResolver($translationTypeName, 'translation', $builder->callback(
-      fn (StringInterface $value) => $value->getString()
-    ));
-  }
 }
