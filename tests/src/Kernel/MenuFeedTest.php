@@ -13,7 +13,7 @@ class MenuFeedTest extends GraphQLTestBase {
   protected $strictConfigSchema = FALSE;
   protected $itemCount;
 
-  public static $modules = [
+  protected static $modules = [
     'path_alias',
     'graphql_directives',
     'silverback_gatsby',
@@ -26,6 +26,7 @@ class MenuFeedTest extends GraphQLTestBase {
     $this->itemCount = 0;
     // Silverback Gatsby setup.
     $this->installSchema('silverback_gatsby', ['gatsby_update_log']);
+    $this->installEntitySchema('path_alias');
     $this->createTestServer(
       'directable',
       '/gatsby',
